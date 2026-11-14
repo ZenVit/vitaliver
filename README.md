@@ -29,23 +29,26 @@ Pixel VENTA CAPI (2141006803281667): PageView, ViewContent, InitiateCheckout, Co
 ## Contenido
 Los datos salen de la etiqueta (`Anuncios/Vitaliver/WhatsApp Image 2026-11-03 at 08.08.30.jpeg`): 30 porciones de 1 ml (15 gotas). Cada porción aporta vitamina B6 1,3 mg (100% VD), vitamina B12 2,4 µg (100% VD), alicina 3 mg y trans-resveratrol 10 mg. Ingredientes: inulina, pectina, trans-resveratrol, ajo en polvo, B6 y B12. Puede contener soja, pescado, crustáceos, piñón y huevo. No contiene gluten.
 Los textos propios de la página no prometen curas, adelgazamiento ni resultados. No hay reseñas, contadores ni "personas viendo" inventados.
-Los creativos del proveedor (Drive "CREATIVOS LISTOS") sí traen frases como "desinflama el hígado". Se dejaron afuera los que dicen "100% efectivo", "especialistas aseguran", "quema grasas", "reduce kilos", los que imitan noticias ("¡URGENTE!", "ÚLTIMA HORA") y el que menciona omega 3, que no figura en la etiqueta. Falta cotejar las propiedades con la inscripción ante DINAVISA.
+Los creativos del proveedor (Drive "CREATIVOS LISTOS", copiados en `Anuncios/Vitaliver/drive/`) ya no se usan en la página. Traían frases como "desinflama el hígado" o "100% efectivo". Falta cotejar las propiedades con la inscripción ante DINAVISA.
 
 ## Imágenes
-`img/` tiene 10 creativos de Drive en WebP cuadrado (1080 y 560 px), la foto real de la etiqueta y los `combo-1/2/3.webp` armados con el frasco recortado de CREATIVO 3. Las copias de los 37 creativos están en `Anuncios/Vitaliver/drive/`, bajadas a 1600 px.
+Todo está en `img/`, en WebP 4:5:
+- **Galería** (`vitaliver-01` a `08`): 1080, 560 y miniatura. Tiene flechas, deslizamiento y teclado.
+- **Banners** (`vlb-*`): 1080×1350 y 560×700. Salen de `imgnuevo/`, la carpeta de PNG originales, que no se sube. Los 8 PNG (15,6 MB) quedaron en 1,4 MB.
+- **Combos**: `combo-1/2/3.webp` para las opciones del pedido.
 
-| Archivo | Creativo de Drive |
-|---|---|
-| vl-hero | CREATIVO 3 |
-| vl-hinchazon | 2XFM7 |
-| vl-higado-intestino | L1V-UP |
-| vl-problema | VL7Q9 |
-| vl-liviano | 3kWvB8Lx |
-| vl-cansado | Qh0Tz7Cd |
-| vl-pesado | T9U5V |
-| vl-comer | V1-PUR |
-| vl-intestino | Mj6FpA9Z |
-| vl-pago-recibir | LIV8QX |
+| Archivo | Original en imgnuevo/ | Dónde aparece |
+|---|---|---|
+| vlb-para-que-sirve | Vitaliver Gotas_ Bienestar en Cada Gota-1 (igual a `3`) | Banner después de la ficha |
+| vlb-bienestar | Bienestar desde adentro con Vitaliver Gotas-2 | Secuencia, 1.ª |
+| vlb-frasco-mano | Imagen de ChatGPT 14 nov 2026, 13_26_17 | Secuencia, 2.ª |
+| vlb-15-gotas | Vitaliver Gotas_ Bienestar Diario-4 | Secuencia, 3.ª |
+| vlb-formula | Infografía Vitaliver_ Fórmula Natural en Gotas-3 | Secuencia, 4.ª |
+| vlb-conoce-formula | 9dc7aec7-….png (dice "NutriLi Labs") | Secuencia, 5.ª |
+| vlb-beneficios | 499b9e0a-….png (dice "NutriLi Labs") | Secuencia, 6.ª |
+| vlb-combos | Promoción Vitaliver Gotas ZenVit Store-5 | Placa de combos (con precios) |
+
+`vlb-combos` muestra los precios (139.000 / 219.000 / 289.000). Si cambiás los precios, hay que rehacer esa imagen.
 
 ## Desarrollo y publicación
 Sin dependencias: `python -m http.server 4173` en esta carpeta. Todo lo del producto está en `CONFIG` dentro de `index.html`. Se publica con GitHub Pages desde el repo `ZenVit/vitaliver`, rama `main`, raíz `/`. Está publicada desde el 14/11/2026 en https://zenvit.github.io/vitaliver/

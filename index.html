@@ -7,7 +7,7 @@
 <meta name="description" content="Vitaliver Gotas: suplemento alimentario líquido con inulina, pectina, trans-resveratrol, alicina y vitaminas B6 y B12. Frasco de 30 ml, 30 porciones. Envío gratis a todo el país, pagás al recibir.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="preload" as="image" href="img/vl-hero-1080.webp" fetchpriority="high">
+<link rel="preload" as="image" href="img/vitaliver-01-portada-1080.webp" imagesrcset="img/vitaliver-01-portada-560.webp 560w, img/vitaliver-01-portada-1080.webp 1080w" imagesizes="(min-width: 1100px) 530px, (min-width: 900px) 48vw, calc(100vw - 32px)" fetchpriority="high">
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;900&display=swap" rel="stylesheet">
 <!--
   PLANTILLA DE LANDING (estructura analizada de una página de referencia)
@@ -30,7 +30,7 @@
   --card:#ffffff;
   --line:#ececf1;
   --radius:12px;
-  --gallery-ratio:1/1;   /* 4/5 si tus fotos son verticales */
+  --gallery-ratio:4/5;
   --maxw:1100px;
 }
 *{box-sizing:border-box;margin:0;padding:0}
@@ -60,12 +60,17 @@ section{padding:40px 0}
 .hero{padding:20px 0 30px}
 .hero__grid{display:grid;gap:28px}
 @media (min-width:900px){.hero__grid{grid-template-columns:1.05fr 1fr;align-items:start}.gallery{position:sticky;top:16px}}
-.gallery__main{position:relative;border-radius:var(--radius);overflow:hidden;background:#faf7f9}
-.gallery__main img,.gallery__main .ph{aspect-ratio:var(--gallery-ratio);object-fit:cover;width:100%}
+.gallery{min-width:0}
+.gallery__main{position:relative;border-radius:var(--radius);overflow:hidden;background:var(--brand-soft);touch-action:pan-y pinch-zoom}
+.gallery__main img,.gallery__main .ph{aspect-ratio:var(--gallery-ratio);object-fit:cover;width:100%;height:auto}
+.gallery__nav{display:flex;justify-content:center;align-items:center;gap:12px;margin-top:8px;color:var(--brand-dark)}
+.gallery__nav button{display:grid;place-items:center;width:44px;height:44px;border:1px solid var(--brand-soft);border-radius:50%;background:#fff;color:inherit;font-size:26px;cursor:pointer}
+.gallery__nav button:hover,.gallery__nav button:focus-visible{background:var(--brand-soft)}
+.gallery__nav span{font-size:13px;font-weight:600;min-width:34px;text-align:center}
 .gallery__badges{position:absolute;top:12px;left:12px;display:flex;flex-direction:column;gap:6px}
 .badge{display:inline-block;font-size:11px;font-weight:700;padding:4px 10px;border-radius:999px;color:#fff;background:var(--brand)}
 .badge.dark{background:#2e2a39}
-.gallery__thumbs{display:grid;grid-template-columns:repeat(6,1fr);gap:8px;margin-top:10px}
+.gallery__thumbs{display:grid;gap:6px;margin-top:10px}
 .gallery__thumbs button{border:2px solid transparent;border-radius:8px;overflow:hidden;padding:0;background:none;cursor:pointer}
 .gallery__thumbs button[aria-current="true"]{border-color:var(--brand)}
 .gallery__thumbs img,.gallery__thumbs .ph{aspect-ratio:var(--gallery-ratio);object-fit:cover;font-size:0}
@@ -334,11 +339,16 @@ fbq('track', 'ViewContent', { content_name: 'Vitaliver', content_type: 'product'
 <!-- 2. Hero / ficha de producto + formulario -->
 <section class="hero">
   <div class="wrap hero__grid">
-    <div class="gallery">
+    <div class="gallery" role="region" aria-label="Galería de Vitaliver Gotas">
       <div class="gallery__main" id="galleryMain">
         <div class="gallery__badges" id="badges"></div>
       </div>
       <div class="gallery__thumbs" id="thumbs"></div>
+      <div class="gallery__nav">
+        <button type="button" id="galleryPrev" aria-label="Imagen anterior">‹</button>
+        <span id="galleryPosition" aria-live="polite"></span>
+        <button type="button" id="galleryNext" aria-label="Imagen siguiente">›</button>
+      </div>
     </div>
 
     <div>
@@ -456,7 +466,7 @@ fbq('track', 'ViewContent', { content_name: 'Vitaliver', content_type: 'product'
 <!-- 3. Banner de imágenes #1 -->
 <div class="banner">
   <button type="button" data-banner-order>
-    <img src="img/vl-problema-1080.webp" srcset="img/vl-problema-560.webp 560w, img/vl-problema-1080.webp 1080w" sizes="(min-width: 560px) 560px, 100vw" width="1080" height="1080" alt="Vitaliver Gotas: el problema y la solución para tu hígado y tu digestión. Abrir pedido." loading="lazy" decoding="async">
+    <img src="img/vlb-para-que-sirve-1080.webp" srcset="img/vlb-para-que-sirve-560.webp 560w, img/vlb-para-que-sirve-1080.webp 1080w" sizes="(min-width: 560px) 560px, 100vw" width="1080" height="1350" alt="¿Para qué sirve Vitaliver Gotas? Una fórmula líquida con vitaminas B6 y B12, resveratrol, alicina e ingredientes de origen vegetal para complementar tu alimentación. Abrir pedido." loading="lazy" decoding="async">
   </button>
 </div>
 <div class="divider"></div>
@@ -474,27 +484,32 @@ fbq('track', 'ViewContent', { content_name: 'Vitaliver', content_type: 'product'
 <!-- 5. Vitaliver en tu rutina -->
 <div class="banner">
   <button type="button" data-banner-order>
-    <img src="img/vl-liviano-1080.webp" srcset="img/vl-liviano-560.webp 560w, img/vl-liviano-1080.webp 1080w" sizes="(min-width: 560px) 560px, 100vw" width="1080" height="1080" alt="¡Volvé a sentirte liviano otra vez! Vitaliver acompaña tu tránsito intestinal y tu digestión. Abrir pedido." loading="lazy" decoding="async">
+    <img src="img/vlb-bienestar-1080.webp" srcset="img/vlb-bienestar-560.webp 560w, img/vlb-bienestar-1080.webp 1080w" sizes="(min-width: 560px) 560px, 100vw" width="1080" height="1350" alt="Cuidá tu bienestar desde adentro: Vitaliver Gotas acompaña una alimentación equilibrada y hábitos saludables. Abrir pedido." loading="lazy" decoding="async">
   </button>
 </div>
 <div class="banner">
   <button type="button" data-banner-order>
-    <img src="img/vl-cansado-1080.webp" srcset="img/vl-cansado-560.webp 560w, img/vl-cansado-1080.webp 1080w" sizes="(min-width: 560px) 560px, 100vw" width="1080" height="1080" alt="¿Te sentís cansado e hinchado? Tu hígado te está pidiendo ayuda. Abrir pedido." loading="lazy" decoding="async">
+    <img src="img/vlb-frasco-mano-1080.webp" srcset="img/vlb-frasco-mano-560.webp 560w, img/vlb-frasco-mano-1080.webp 1080w" sizes="(min-width: 560px) 560px, 100vw" width="1080" height="1350" alt="Frasco de Vitaliver Gotas de 30 ml con gotero. Abrir pedido." loading="lazy" decoding="async">
   </button>
 </div>
 <div class="banner">
   <button type="button" data-banner-order>
-    <img src="img/vl-pesado-1080.webp" srcset="img/vl-pesado-560.webp 560w, img/vl-pesado-1080.webp 1080w" sizes="(min-width: 560px) 560px, 100vw" width="1080" height="1080" alt="Si tenés el hígado pesado o el intestino inflamado: Vitaliver, gotas para después de las comidas. Abrir pedido." loading="lazy" decoding="async">
+    <img src="img/vlb-15-gotas-1080.webp" srcset="img/vlb-15-gotas-560.webp 560w, img/vlb-15-gotas-1080.webp 1080w" sizes="(min-width: 560px) 560px, 100vw" width="1080" height="1350" alt="15 gotas para complementar tu rutina diaria: 1 ml por porción, sabor menta, 30 porciones por envase, con vitaminas B6 y B12. Abrir pedido." loading="lazy" decoding="async">
   </button>
 </div>
 <div class="banner">
   <button type="button" data-banner-order>
-    <img src="img/vl-comer-1080.webp" srcset="img/vl-comer-560.webp 560w, img/vl-comer-1080.webp 1080w" sizes="(min-width: 560px) 560px, 100vw" width="1080" height="1080" alt="¿Comer te da miedo? Recuperá el placer de una digestión sana. Abrir pedido." loading="lazy" decoding="async">
+    <img src="img/vlb-formula-1080.webp" srcset="img/vlb-formula-560.webp 560w, img/vlb-formula-1080.webp 1080w" sizes="(min-width: 560px) 560px, 100vw" width="1080" height="1350" alt="La fórmula de Vitaliver: trans-resveratrol 10 mg, alicina 3 mg, vitamina B6 1,3 mg, vitamina B12 2,4 µg, inulina y pectina por porción de 1 ml. Abrir pedido." loading="lazy" decoding="async">
   </button>
 </div>
 <div class="banner">
   <button type="button" data-banner-order>
-    <img src="img/vl-intestino-1080.webp" srcset="img/vl-intestino-560.webp 560w, img/vl-intestino-1080.webp 1080w" sizes="(min-width: 560px) 560px, 100vw" width="1080" height="1080" alt="Intestino saludable: Vitaliver acompaña tu digestión. Abrir pedido." loading="lazy" decoding="async">
+    <img src="img/vlb-conoce-formula-1080.webp" srcset="img/vlb-conoce-formula-560.webp 560w, img/vlb-conoce-formula-1080.webp 1080w" sizes="(min-width: 560px) 560px, 100vw" width="1080" height="1350" alt="Conocé la fórmula: vitamina B6 1,3 mg, vitamina B12 2,4 µg, alicina 3 mg y trans-resveratrol 10 mg por porción de 1 ml. También contiene inulina, pectina y fibra de manzana. Abrir pedido." loading="lazy" decoding="async">
+  </button>
+</div>
+<div class="banner">
+  <button type="button" data-banner-order>
+    <img src="img/vlb-beneficios-1080.webp" srcset="img/vlb-beneficios-560.webp 560w, img/vlb-beneficios-1080.webp 1080w" sizes="(min-width: 560px) 560px, 100vw" width="1080" height="1350" alt="Vitaliver Gotas: vitaminas B6 y B12 que apoyan el metabolismo energético normal, con resveratrol, alicina, inulina y fibra de manzana. 30 ml, 15 gotas por porción, 30 porciones, sabor menta. Abrir pedido." loading="lazy" decoding="async">
   </button>
 </div>
 
@@ -534,7 +549,7 @@ fbq('track', 'ViewContent', { content_name: 'Vitaliver', content_type: 'product'
 <div class="banner">
   <p class="banner__note" id="bannerPriceNote" hidden>La imagen muestra los precios de lista. Tu descuento se aplica en el pedido.</p>
   <button type="button" id="comboBanner" data-banner-order>
-    <img src="img/vl-pago-recibir-1080.webp" srcset="img/vl-pago-recibir-560.webp 560w, img/vl-pago-recibir-1080.webp 1080w" sizes="(min-width: 560px) 560px, 100vw" width="1080" height="1080" alt="¿El malestar digestivo te limita el día? Vitaliver: envío gratis y pago al recibir. Abrir pedido." loading="lazy" decoding="async">
+    <img src="img/vlb-combos-1080.webp" srcset="img/vlb-combos-560.webp 560w, img/vlb-combos-1080.webp 1080w" sizes="(min-width: 560px) 560px, 100vw" width="1080" height="1350" alt="Elegí tu combo de Vitaliver Gotas: 1 frasco Gs. 139.000, 2 frascos Gs. 219.000 (ahorrás 21%), 3 frascos Gs. 289.000 (ahorrás 31%). Delivery gratis y pagás al recibir. Abrir pedido." loading="lazy" decoding="async">
   </button>
 </div>
 <div class="divider on-brand"></div>
@@ -579,7 +594,16 @@ const CONFIG = {
     name: "Vitaliver Gotas – Suplemento líquido para tu hígado y tu digestión, 30 ml",
     proof: "Suplemento alimentario líquido · Frasco de 30 ml · 30 porciones",
     badges: [],   // las fotos ya traen texto
-    images: ["img/vl-hero-1080.webp", "img/vl-hinchazon-1080.webp", "img/vl-higado-intestino-1080.webp", "img/vl-etiqueta-1080.webp"],
+    images: [
+      { file: "vitaliver-01-portada", title: "Vitaliver Gotas", alt: "Suplemento alimentario líquido de 30 ml, 30 porciones, sabor menta, con inulina, pectina, vitaminas B6 y B12." },
+      { file: "vitaliver-02-rutina", title: "30 porciones en un frasco", alt: "Frasco de 30 ml, con 1 ml por porción y sabor menta." },
+      { file: "vitaliver-03-etiqueta", title: "La etiqueta, a la vista", alt: "Foto de la etiqueta real. Por 1 ml: vitamina B6, 1,3 mg; vitamina B12, 2,4 µg; alicina, 3 mg; trans-resveratrol, 10 mg." },
+      { file: "vitaliver-04-porcion", title: "¿Cuánto es una porción?", alt: "Una porción de Vitaliver equivale a 1 ml o 15 gotas. El envase viene con gotero." },
+      { file: "vitaliver-05-fibras", title: "Dos fibras en su fórmula", alt: "La inulina y la pectina figuran en la lista de ingredientes." },
+      { file: "vitaliver-06-formula", title: "¿Qué aporta cada porción?", alt: "Trans-resveratrol, 10 mg; alicina, 3 mg; vitaminas B6 y B12, 100% del valor diario de cada una." },
+      { file: "vitaliver-07-combos", title: "¿Cuántos frascos querés?", alt: "Elegí entre 1 frasco de 30 ml, 2 frascos con 60 ml en total o 3 frascos con 90 ml en total." },
+      { file: "vitaliver-08-entrega", title: "Pedí hoy, pagá al recibir", alt: "Envío gratis a todo Paraguay. Pagás cuando recibís tu pedido." }
+    ],
     chips: [
       { icon: "💧", title: "En gotas: 1 ml al día", text: "15 gotas por porción, fácil de tomar" },
       { icon: "🍏", title: "Inulina y pectina", text: "Fibras que acompañan tu digestión" },
@@ -709,26 +733,50 @@ $("badges").innerHTML = P.badges.map(b => `<span class="badge ${b.dark ? "dark" 
 $("chips").innerHTML = P.chips.map(c => `<div class="chip"><span class="chip__ico">${c.icon}</span><div><b>${esc(c.title)}</b><span>${esc(c.text)}</span></div></div>`).join("");
 
 let current = 0;
+const galleryMain = $("galleryMain");
+const thumbs = $("thumbs");
 function showImage(i) {
   current = i;
-  const main = $("galleryMain");
-  main.querySelectorAll("img,.ph").forEach(n => n.remove());
-  main.insertAdjacentHTML("afterbegin", img(P.images[i], P.name, `Foto ${i + 1} · 1080×1350`).replace('loading="lazy"', i === 0 ? 'fetchpriority="high"' : 'loading="lazy"'));
-  [...$("thumbs").children].forEach((b, j) => b.setAttribute("aria-current", j === i));
+  const { file, title, alt } = P.images[i];
+  const large = `img/${file}-1080.webp`;
+  const small = `img/${file}-560.webp`;
+  const priority = i === 0 ? 'fetchpriority="high"' : '';
+  galleryMain.querySelector("img,.ph")?.remove();
+  galleryMain.insertAdjacentHTML("afterbegin", img(large, `${title}. ${alt}`, title).replace(
+    'loading="lazy"',
+    `${priority} width="1080" height="1350" decoding="async" srcset="${small} 560w, ${large} 1080w" sizes="(min-width: 1100px) 530px, (min-width: 900px) 48vw, calc(100vw - 32px)"`
+  ));
+  [...thumbs.children].forEach((b, j) => b.setAttribute("aria-current", j === i));
+  $("galleryPosition").textContent = `${i + 1}/${P.images.length}`;
 }
-$("thumbs").style.gridTemplateColumns = `repeat(${P.images.length}, 1fr)`;
-$("thumbs").innerHTML = P.images.map((s, i) => `<button type="button" aria-label="Ver foto ${i + 1}">${img(s, "", "")}</button>`).join("");
-[...$("thumbs").children].forEach((b, i) => b.addEventListener("click", () => showImage(i)));
+function moveImage(step) {
+  showImage((current + step + P.images.length) % P.images.length);
+}
+thumbs.style.gridTemplateColumns = `repeat(${P.images.length}, minmax(0, 1fr))`;
+thumbs.innerHTML = P.images.map(({ file, title }) => `<button type="button" aria-label="${esc(title)}">${img(`img/${file}-thumb.webp`, "", "")}</button>`).join("");
+[...thumbs.children].forEach((b, i) => b.addEventListener("click", () => showImage(i)));
+$("galleryPrev").addEventListener("click", () => moveImage(-1));
+$("galleryNext").addEventListener("click", () => moveImage(1));
+galleryMain.closest(".gallery").addEventListener("keydown", e => {
+  if (e.key !== "ArrowLeft" && e.key !== "ArrowRight") return;
+  e.preventDefault();
+  moveImage(e.key === "ArrowRight" ? 1 : -1);
+});
 showImage(0);
 
 /* swipe en la foto principal */
-let x0 = null;
-$("galleryMain").addEventListener("touchstart", e => x0 = e.touches[0].clientX, { passive: true });
-$("galleryMain").addEventListener("touchend", e => {
-  if (x0 === null) return;
-  const dx = e.changedTouches[0].clientX - x0; x0 = null;
-  if (Math.abs(dx) > 40) showImage((current + (dx < 0 ? 1 : -1) + P.images.length) % P.images.length);
-});
+let swipeStart = null;
+galleryMain.addEventListener("touchstart", e => {
+  swipeStart = e.touches.length === 1 && !e.target.closest("button") ? e.touches[0] : null;
+}, { passive: true });
+galleryMain.addEventListener("touchcancel", () => { swipeStart = null; });
+galleryMain.addEventListener("touchend", e => {
+  if (!swipeStart) return;
+  const dx = e.changedTouches[0].clientX - swipeStart.clientX;
+  const dy = e.changedTouches[0].clientY - swipeStart.clientY;
+  swipeStart = null;
+  if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy)) moveImage(dx < 0 ? 1 : -1);
+}, { passive: true });
 
 if (CONFIG.viewers) {
   const [a, b] = CONFIG.viewers;
