@@ -33,7 +33,7 @@ Los creativos del proveedor (Drive "CREATIVOS LISTOS", copiados en `Anuncios/Vit
 
 ## Imágenes
 Todo está en `img/`, en WebP 4:5:
-- **Galería** (`vitaliver-01` a `08`): 1080, 560 y miniatura. Tiene flechas, deslizamiento y teclado.
+- **Galería principal** (`vitaliver-g1` a `g3`): 1080, 560 y miniatura. Tiene flechas, deslizamiento y teclado. Son las 3 que eligió el dueño: beneficios y fórmula, que dicen "NutriLi Labs", y el frasco en la mano.
 - **Banners** (`vlb-*`): 1080×1350 y 560×700. Salen de `imgnuevo/`, la carpeta de PNG originales, que no se sube. Se usan 6 PNG, ya en WebP.
 - **Combos**: `combo-1/2/3.webp` para las opciones del pedido.
 
@@ -41,12 +41,11 @@ Todo está en `img/`, en WebP 4:5:
 |---|---|---|
 | vlb-para-que-sirve | Vitaliver Gotas_ Bienestar en Cada Gota-1 (igual a `3`) | Banner después de la ficha |
 | vlb-bienestar | Bienestar desde adentro con Vitaliver Gotas-2 | Secuencia, 1.ª |
-| vlb-frasco-mano | Imagen de ChatGPT 14 nov 2026, 13_26_17 | Secuencia, 2.ª |
 | vlb-15-gotas | Vitaliver Gotas_ Bienestar Diario-4 | Secuencia, 3.ª |
 | vlb-formula | Infografía Vitaliver_ Fórmula Natural en Gotas-3 | Secuencia, 4.ª |
 | vlb-combos | Promoción Vitaliver Gotas ZenVit Store-5 | Placa de combos (con precios) |
 
-No se usan `9dc7aec7-….png` ni `499b9e0a-….png` porque dicen "NutriLi Labs" en lugar de ZenVit.
+`499b9e0a-….png`, `9dc7aec7-….png` e `Imagen de ChatGPT…png` se usan en la galería principal (`vitaliver-g1/g2/g3`), no como banners.
 
 `vlb-combos` muestra los precios (139.000 / 219.000 / 289.000). Si cambiás los precios, hay que rehacer esa imagen.
 
