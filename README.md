@@ -48,4 +48,4 @@ Los creativos del proveedor (Drive "CREATIVOS LISTOS") sí traen frases como "de
 | vl-pago-recibir | LIV8QX |
 
 ## Desarrollo y publicación
-Sin dependencias: `python -m http.server 4173` en esta carpeta. Todo lo del producto está en `CONFIG` dentro de `index.html`. Está pensada para GitHub Pages (repo sugerido `ZenVit/vitaliver`, rama `main`, raíz `/`), pero todavía no está publicada.
+Sin dependencias: `python -m http.server 4173` en esta carpeta. Todo lo del producto está en `CONFIG` dentro de `index.html`. Se publica con GitHub Pages desde el repo `ZenVit/vitaliver`, rama `main`, raíz `/`. Está publicada desde el 14/11/2026 en https://zenvit.github.io/vitaliver/
