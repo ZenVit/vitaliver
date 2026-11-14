@@ -6,7 +6,7 @@
 const PRODUCT_NAME = "VITALIVER";
 const ORIGIN = "landing_vitaliver";
 // Precio TOTAL por combo.
-const BUNDLES: Record<number, number> = { 1: 139000, 2: 219000, 3: 289000 };
+const BUNDLES: Record<number, number> = { 1: 159000, 2: 259000, 3: 320000 };
 const DEPARTMENTS = ["Asunción", "Central"];
 // Descuento de la ventana "antes de irte" de la landing. El monto lo fija el servidor:
 // el navegador solo avisa que la persona lo aceptó (descuento: "salida").

@@ -3,9 +3,9 @@
 Landing estática hecha con la misma plantilla que ZenVit/articumina (copiada de MagnesioVEE, la versión más nueva). Incluye el checkout en ventana con departamentos y ciudades de Paraguay, el mapa opcional, los combos, el descuento "antes de irte", el pago al recibir, el botón de WhatsApp, el Pixel con CAPI y las visitas en vivo para el panel.
 
 ## Precios
-- 1 frasco: Gs. 139.000
-- 2 frascos: Gs. 219.000 (ahorro Gs. 59.000)
-- 3 frascos: Gs. 289.000 (ahorro Gs. 128.000)
+- 1 frasco: Gs. 159.000
+- 2 frascos: Gs. 259.000 (ahorro Gs. 59.000)
+- 3 frascos: Gs. 320.000 (ahorro Gs. 157.000)
 - Descuento "antes de irte": Gs. 10.000 (1 frasco) y Gs. 20.000 (combos).
 
 Costo del proveedor (Naturalcaps): Gs. 42.000. Precio sugerido: Gs. 119.200. La competencia (Tienda 360) lo vende a Gs. 129.000.
@@ -47,7 +47,7 @@ Todo está en `img/`, en WebP 4:5:
 
 `499b9e0a-….png`, `9dc7aec7-….png` e `Imagen de ChatGPT…png` se usan en la galería principal (`vitaliver-g1/g2/g3`), no como banners.
 
-`vlb-combos` muestra los precios (139.000 / 219.000 / 289.000). Si cambiás los precios, hay que rehacer esa imagen.
+`vlb-combos` muestra los precios (159.000 / 259.000 / 320.000). Se corrigieron sobre la imagen original con `_herramientas/vitaliver-combos-precios.py` y la versión corregida quedó en `imgnuevo/`. Si cambiás los precios, hay que rehacer esa imagen.
 
 ## Desarrollo y publicación
 Sin dependencias: `python -m http.server 4173` en esta carpeta. Todo lo del producto está en `CONFIG` dentro de `index.html`. Se publica con GitHub Pages desde el repo `ZenVit/vitaliver`, rama `main`, raíz `/`. Está publicada desde el 14/11/2026 en https://zenvit.github.io/vitaliver/
