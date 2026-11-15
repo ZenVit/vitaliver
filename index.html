@@ -150,6 +150,10 @@ section{padding:40px 0}
 .cta-perks{list-style:none;margin:12px 0 0;padding:10px 12px;display:grid;gap:5px;font-size:12.5px;color:var(--muted);background:#f6faf3;border-radius:10px}
 .cta-perks b{color:var(--text)}
 .city-other{margin-top:8px}
+.inv-toggle{display:flex;align-items:center;gap:10px;margin:4px 0 10px;padding:12px;border:1px dashed #cfcdd6;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer}
+.inv-toggle input{width:20px;height:20px;accent-color:var(--brand);flex:none}
+.invoice{padding:12px 12px 2px;margin:-4px 0 12px;border-radius:10px;background:var(--brand-soft)}
+.field label small{font-weight:400;color:var(--muted)}
 .field select:disabled{background:#f4f3f6;color:#9a97a3}
 .order-sum{border:1px solid var(--line);border-radius:12px;background:#f6fbf8;padding:12px 14px;margin:6px 0 14px}
 .order-sum h4{font-size:14px;margin-bottom:10px}
@@ -395,6 +399,12 @@ fbq('track', 'ViewContent', { content_name: 'Vitaliver', content_type: 'product'
         <div class="field"><label for="fCity">Ciudad</label><select id="fCity" name="city" required disabled><option value="">Primero elegí el departamento</option></select>
           <input id="fCityOther" class="city-other" autocomplete="address-level2" placeholder="Escribí tu ciudad" hidden><div class="err">Elegí tu ciudad.</div></div>
         <div class="field"><label for="fAddr">Dirección</label><input id="fAddr" name="address" autocomplete="street-address" placeholder="Calle, número" required><div class="err">Escribí tu dirección.</div></div>
+        <label class="inv-toggle"><input type="checkbox" id="fInvoice"><span>🧾 Necesito factura legal</span></label>
+        <div class="invoice" id="invoiceBox" hidden>
+          <div class="field"><label for="fRuc">RUC o CI</label><input id="fRuc" inputmode="numeric" autocomplete="off" placeholder="Ej: 80012345-6 o 1234567"><div class="err">Escribí el RUC con su dígito (80012345-6) o tu número de CI.</div></div>
+          <div class="field"><label for="fRazon">Nombre o razón social</label><input id="fRazon" autocomplete="organization" placeholder="Como figura en el RUC"><div class="err">Escribí el nombre o la razón social.</div></div>
+          <div class="field"><label for="fInvEmail">Correo para la factura <small>(opcional)</small></label><input id="fInvEmail" type="email" inputmode="email" autocomplete="email" placeholder="tucorreo@ejemplo.com"><div class="err">Revisá el correo.</div></div>
+        </div>
         <div class="hp" aria-hidden="true"><label>No completar <input id="fWebsite" tabindex="-1" autocomplete="off"></label></div>
         <div class="order-sum">
           <h4>🧾 Resumen del pedido</h4>
@@ -847,8 +857,19 @@ $("fCity").addEventListener("change", toggleOtherCity);
 const rules = {
   fName: v => v.trim().length >= 3,
   fPhone: v => !!localPhone(v),
-  fDept: v => !!v, fCity: () => cityValue().length >= 2, fAddr: v => v.trim().length >= 4
+  fDept: v => !!v, fCity: () => cityValue().length >= 2, fAddr: v => v.trim().length >= 4,
+  // Factura legal: solo se exige si marcó la casilla.
+  fRuc: v => !wantsInvoice() || /^\d{5,9}(-\d)?$/.test(cleanRuc(v)),
+  fRazon: v => !wantsInvoice() || v.trim().length >= 3,
+  fInvEmail: v => !wantsInvoice() || !v.trim() || /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v.trim())
 };
+function wantsInvoice() { return $("fInvoice").checked; }
+function cleanRuc(v) { return String(v).replace(/[.\s]/g, ""); }
+$("fInvoice").addEventListener("change", () => {
+  $("invoiceBox").hidden = !wantsInvoice();
+  if (wantsInvoice()) $("fRuc").focus();
+  else ["fRuc", "fRazon", "fInvEmail"].forEach(id => $(id).closest(".field").classList.remove("invalid", "valid"));
+});
 function validate() {
   let ok = true;
   for (const [id, fn] of Object.entries(rules)) {
@@ -982,8 +1003,26 @@ const cookie = n => (document.cookie.match(new RegExp("(?:^|; )" + n + "=([^;]*)
 function whatsappLink(order) {
   const lines = [`Hola! Quiero hacer un pedido:`, `🛍️ ${order.product}`, `📦 ${order.offer} – ${money(order.total)}`,
     `👤 ${order.name}`, `📞 ${order.phone}`, `📍 ${order.address}, ${order.city}, ${order.department}`,
-    order.maps && `🗺️ ${order.maps}`, `💵 Pago contra entrega`].filter(Boolean);
+    order.maps && `🗺️ ${order.maps}`, invoiceLine(order), `💵 Pago contra entrega`].filter(Boolean);
   return `https://wa.me/${CONFIG.order.whatsapp}?text=${encodeURIComponent(lines.join("\n"))}`;
+}
+function invoiceLine(order) {
+  const f = order.invoice;
+  return f ? `🧾 Factura legal: ${f.razon} – RUC/CI ${f.ruc}${f.email ? ` – ${f.email}` : ""}` : "";
+}
+// Mensaje de confirmación por WhatsApp. La primera línea no se cambia: es la que reconoce el bot.
+function confirmMessage(order, orderId) {
+  const lines = [
+    `Hola, confirmo mi pedido N° ${orderId}`,
+    "",
+    `📦 Vitaliver Gotas – ${order.offer}`,
+    `💰 Total: ${money(order.total)}`,
+    `👤 ${order.name}`,
+    `📍 ${order.address}, ${order.city}`
+  ];
+  if (order.invoice) lines.push(invoiceLine(order));
+  lines.push("", "🚚 Envío gratis · 💵 Pago al recibir");
+  return lines.join("\n");
 }
 
 $("orderForm").addEventListener("submit", async e => {
@@ -997,7 +1036,8 @@ $("orderForm").addEventListener("submit", async e => {
     // En el panel el interior figura como "Interior": la ciudad lleva el departamento para no perderlo.
     city: ["Asunción", "Central"].includes($("fDept").value) ? cityValue() : `${cityValue()}, ${$("fDept").value}`,
     address: $("fAddr").value.trim(),
-    maps: pick.url, page: location.href
+    maps: pick.url, page: location.href,
+    invoice: wantsInvoice() ? { ruc: cleanRuc($("fRuc").value), razon: $("fRazon").value.trim().replace(/\s+/g, " "), email: $("fInvEmail").value.trim() } : null
   };
   const btn = $("ctaBtn"); btn.disabled = true;
   btn.querySelector(".cta__main").textContent = "⏳ Enviando tu pedido…";
@@ -1013,7 +1053,9 @@ $("orderForm").addEventListener("submit", async e => {
           utm_source: utm.get("utm_source") || "", utm_medium: utm.get("utm_medium") || "",
           utm_campaign: utm.get("utm_campaign") || "", fbclid: utm.get("fbclid") || "",
           meta_fbp: cookie("_fbp"), meta_fbc: cookie("_fbc"),
-          descuento: exitOff(selected) ? "salida" : ""
+          descuento: exitOff(selected) ? "salida" : "",
+          factura: !!order.invoice, ruc: order.invoice?.ruc || "", razon_social: order.invoice?.razon || "",
+          correo_factura: order.invoice?.email || ""
         })
       });
       const data = await r.json().catch(() => ({}));
@@ -1036,7 +1078,7 @@ $("orderForm").addEventListener("submit", async e => {
     $("doneTitle").textContent = `¡Gracias, ${first}! Recibimos tu pedido`;
     $("doneId").textContent = orderId ? `Pedido N° ${orderId}` : "";
     $("doneId").hidden = !orderId;
-    $("doneImg").src = P.images[0];
+    $("doneImg").src = `img/${P.images[0].file}-560.webp`;
     $("doneProduct").textContent = "Vitaliver Gotas";
     $("doneOffer").textContent = order.offer;
     $("doneAddr").textContent = `${order.address}, ${order.city}`;
@@ -1044,12 +1086,12 @@ $("orderForm").addEventListener("submit", async e => {
     $("doneTotal").textContent = money(order.total);
     $("doneWindow").textContent = `Coordina con vos la entrega en ${local ? "24 a 48 hs" : "48 a 72 hs, según la zona"}.`;
     // El bot reconoce "confirmo mi pedido N° PY…" y responde el resumen (gratis: escribe el cliente).
-    const confirmText = orderId ? `Hola, confirmo mi pedido N° ${orderId}` : `Hola! Hice un pedido de Vitaliver (${order.offer}) desde la página.`;
+    const confirmText = orderId ? confirmMessage(order, orderId) : `Hola! Hice un pedido de Vitaliver (${order.offer}) desde la página.`;
     const waUrl = `https://wa.me/${CONFIG.order.whatsapp}?text=${encodeURIComponent(confirmText)}`;
     $("doneWa").href = waUrl;
     dlg.scrollTop = 0;
     $("orderForm").hidden = true; $("checkoutDone").hidden = false;
-    $("orderForm").reset(); renderOffers();
+    $("orderForm").reset(); renderOffers(); $("invoiceBox").hidden = true;
     mapDetails.open = false;
     $("mapSummary").textContent = "Agregar ubicación (opcional)";
     if (pick.marker) { pick.marker.remove(); pick.marker = null; }

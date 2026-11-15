@@ -23,6 +23,14 @@ Estado (14/11/2026): los tres están aplicados en PROD (migración `landing_vita
    `landing_vitaliver: { id: 'VITALIVER-30ML', name: 'Vitaliver Gotas - 30 ml', sourceUrl: 'https://zenvit.github.io/vitaliver/' },`
 
 
+### Factura legal y confirmación por WhatsApp
+En el checkout hay una casilla "🧾 Necesito factura legal" que pide RUC o CI, nombre o razón social y, si quiere, un correo. El servidor lo valida y lo guarda así:
+- `ci`: el RUC o CI.
+- `correo`: el correo, si lo puso.
+- `observaciones`: `🧾 FACTURA LEGAL: <razón social> · RUC/CI <número> · <correo>`. Esa línea aparece en el aviso de Telegram y en el panel.
+
+El mensaje de WhatsApp que se abre al terminar arranca con "Hola, confirmo mi pedido N° PY…" (esa línea no se cambia). Después agrega el producto, el total, el nombre, la dirección, la factura si la pidió y "Envío gratis · Pago al recibir".
+
 ## Meta y visitas
 Pixel VENTA CAPI (2141006803281667): PageView, ViewContent, InitiateCheckout, Contact y Purchase, con eventID `<pedido>:purchase`. `zv-visitas.js` alimenta la Vista en tiempo real (`data-landing="landing_vitaliver"`). `track-visitor` ya acepta `zenvit.github.io` y no necesita cambios.
 

@@ -69,6 +69,24 @@ Deno.serve(async (req: Request) => {
   const total = precioLista - descuento;
   const maps = clean(body.ubicacion_maps, 500);
 
+  // Factura legal (opcional): RUC con dígito verificador o número de CI, y nombre o razón social.
+  const factura = body.factura === true;
+  const ruc = clean(body.ruc, 20).replace(/[.\s]/g, "");
+  const razonSocial = clean(body.razon_social, 150).replace(/\s+/g, " ");
+  const correoFactura = clean(body.correo_factura, 120);
+  if (factura) {
+    if (!/^\d{5,9}(-\d)?$/.test(ruc) || razonSocial.length < 3) {
+      return reply({ error: "Revisá los datos de la factura: RUC o CI y nombre o razón social." }, 400);
+    }
+    if (correoFactura && !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(correoFactura)) {
+      return reply({ error: "Revisá el correo para la factura." }, 400);
+    }
+  }
+  const notas = [
+    factura ? `🧾 FACTURA LEGAL: ${razonSocial} · RUC/CI ${ruc}${correoFactura ? ` · ${correoFactura}` : ""}` : "",
+    descuento ? `Descuento web "antes de irte": Gs. ${gs(descuento)} (precio normal Gs. ${gs(precioLista)}).` : "",
+  ].filter(Boolean);
+
   const row = {
     id,
     producto: PRODUCT_NAME,
@@ -80,15 +98,13 @@ Deno.serve(async (req: Request) => {
     ganancia: 0,
     nombre,
     telefono,
-    correo: "No informado",
-    ci: "No informado",
+    correo: factura && correoFactura ? correoFactura : "No informado",
+    ci: factura ? ruc : "No informado",
     departamento: interior ? "Interior" : deptoElegido,
     ciudad,
     direccion,
     referencia: clean(body.referencia, 1500) || "Sin referencia",
-    ...(descuento ? {
-      observaciones: `Descuento web "antes de irte": Gs. ${gs(descuento)} (precio normal Gs. ${gs(precioLista)}).`,
-    } : {}),
+    ...(notas.length ? { observaciones: notas.join("\n") } : {}),
     ubicacion_maps: maps || "No informado",
     maps_url: maps,
     tipo_entrega: interior ? "Transportadora" : "Delivery a domicilio",
