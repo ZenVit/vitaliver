@@ -154,6 +154,7 @@ section{padding:40px 0}
 .inv-toggle input{width:20px;height:20px;accent-color:var(--brand);flex:none}
 .invoice{padding:12px 12px 2px;margin:-4px 0 12px;border-radius:10px;background:var(--brand-soft)}
 .field label small{font-weight:400;color:var(--muted)}
+.cart-note{margin:4px 0 0;font-size:11.5px;color:var(--muted)}
 .field select:disabled{background:#f4f3f6;color:#9a97a3}
 .order-sum{border:1px solid var(--line);border-radius:12px;background:#f6fbf8;padding:12px 14px;margin:6px 0 14px}
 .order-sum h4{font-size:14px;margin-bottom:10px}
@@ -394,7 +395,7 @@ fbq('track', 'ViewContent', { content_name: 'Vitaliver', content_type: 'product'
 
         <h3>🚚 Completá tus datos y pagá al recibir</h3>
         <div class="field"><label for="fName">Nombre y apellido</label><input id="fName" name="name" autocomplete="name" placeholder="Ej: Ana López" required><div class="err">Escribí tu nombre.</div></div>
-        <div class="field"><label for="fPhone">Teléfono / WhatsApp</label><input id="fPhone" name="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="Ej: 0981 234 567" required><div class="err">Escribí un número válido.</div></div>
+        <div class="field"><label for="fPhone">Teléfono / WhatsApp</label><input id="fPhone" name="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="Ej: 0981 234 567" required><div class="err">Escribí un número válido.</div><p class="cart-note">Guardamos tus datos para ayudarte a terminar el pedido por WhatsApp.</p></div>
         <div class="field"><label for="fDept">Departamento</label><select id="fDept" name="department" required></select><div class="err">Elegí tu departamento.</div></div>
         <div class="field"><label for="fCity">Ciudad</label><select id="fCity" name="city" required disabled><option value="">Primero elegí el departamento</option></select>
           <input id="fCityOther" class="city-other" autocomplete="address-level2" placeholder="Escribí tu ciudad" hidden><div class="err">Elegí tu ciudad.</div></div>
@@ -613,6 +614,8 @@ const CONFIG = {
   viewers: null,          // sin "personas viendo": no es un dato real
 
   /* mode "panel": el pedido entra al panel (pedidos_web) y avisa por Telegram. Si falla, ofrece WhatsApp. */
+  /* Carrito abandonado: se guarda apenas hay nombre y celular válido (save-abandoned-cart). */
+  cart: { endpoint: "https://roruinqorwgolcrhhmpm.supabase.co/functions/v1/save-abandoned-cart", landing: "landing_vitaliver", product: "VITALIVER" },
   order: { mode: "panel", endpoint: "https://roruinqorwgolcrhhmpm.supabase.co/functions/v1/create-vitaliver-order",
            whatsapp: "595972738779", webhookUrl: "", thankYouUrl: "" },
 
@@ -1072,6 +1075,7 @@ $("orderForm").addEventListener("submit", async e => {
     if (window.fbq) fbq("track", "Purchase", { value: order.total, currency: "PYG", content_name: "Vitaliver", content_type: "product", num_items: order.quantity }, orderId ? { eventID: orderId + ":purchase" } : undefined);
     if (window.zvVisitas) zvVisitas.track("purchase", { orderId, revenue: order.total });
     EXIT.done = true; EXIT.active = false; store.set(EXIT.key + "_ok", "");
+    cartDone();
     if (CONFIG.order.thankYouUrl) { location.href = CONFIG.order.thankYouUrl; return; }
     const first = order.name.split(/\s+/)[0];
     const local = ["Asunción", "Central"].includes(order.department);
@@ -1105,6 +1109,60 @@ $("orderForm").addEventListener("submit", async e => {
     m.innerHTML = `No pudimos registrar el pedido. <a href="${esc(whatsappLink(order))}" target="_blank" rel="noopener">Envialo por WhatsApp</a> y lo cargamos nosotros.`;
   } finally { btn.disabled = false; updatePrice(); }
 });
+
+/* --- Carrito abandonado --- */
+// Apenas hay nombre y un celular válido se guarda el carrito (y se actualiza mientras escribe).
+// Si después compra, queda "recuperado" en el panel; si no, aparece para escribirle por WhatsApp.
+const CART = { timer: 0, last: "", done: false, leadSent: false, keyName: "zv_cart_" + CONFIG.cart.landing };
+function cartKey() {
+  let key = store.get(CART.keyName);
+  if (!key || !/^[A-Za-z0-9_-]{8,64}$/.test(key)) {
+    key = "c" + Date.now().toString(36) + Math.random().toString(36).slice(2, 10);
+    store.set(CART.keyName, key);
+  }
+  return key;
+}
+function cartPayload() {
+  const name = $("fName").value.trim().replace(/\s+/g, " ");
+  const phone = localPhone($("fPhone").value);
+  if (name.length < 3 || !phone) return null;
+  const utm = new URLSearchParams(location.search);
+  return {
+    cart_key: cartKey(), landing: CONFIG.cart.landing, producto: CONFIG.cart.product,
+    combo: selected.title, cantidad: selected.qty, total: finalPrice(selected),
+    nombre: name, telefono: phone, departamento: $("fDept").value, ciudad: cityValue(), direccion: $("fAddr").value.trim(),
+    landing_url: location.href, utm_source: utm.get("utm_source") || "", utm_campaign: utm.get("utm_campaign") || "",
+    fbclid: utm.get("fbclid") || "", website: $("fWebsite").value
+  };
+}
+function cartSend() {
+  clearTimeout(CART.timer);
+  if (CART.done || !CONFIG.cart.endpoint) return;
+  const data = cartPayload();
+  if (!data) return;
+  const body = JSON.stringify(data);
+  if (body === CART.last) return;
+  CART.last = body;
+  fetch(CONFIG.cart.endpoint, { method: "POST", headers: { "Content-Type": "application/json" }, body, keepalive: true })
+    .then(r => {
+      if (r.ok && !CART.leadSent) {
+        CART.leadSent = true;
+        if (window.zvVisitas) zvVisitas.track("generate_lead");   // "Dejó sus datos" en la vista en tiempo real
+      }
+    })
+    .catch(() => { CART.last = ""; });
+}
+function cartSchedule() { clearTimeout(CART.timer); CART.timer = setTimeout(cartSend, 1500); }
+function cartDone() { CART.done = true; clearTimeout(CART.timer); store.set(CART.keyName, ""); }
+["fName", "fPhone", "fDept", "fCity", "fCityOther", "fAddr"].forEach(id => {
+  const el = $(id);
+  if (el) { el.addEventListener("input", cartSchedule); el.addEventListener("change", cartSchedule); }
+});
+// Cambio de combo (las opciones se vuelven a dibujar al elegir: se reconoce por el name del radio).
+document.addEventListener("change", e => { if (e.target && (e.target.name === "offersModal" || e.target.name === "offers")) cartSchedule(); });
+// Si se va de la página (o cierra la pestaña), se manda lo último que escribió.
+document.addEventListener("visibilitychange", () => { if (document.hidden) cartSend(); });
+addEventListener("pagehide", cartSend);
 
 /* --- Reseñas --- */
 const R = CONFIG.reviews;
